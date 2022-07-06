@@ -7,7 +7,8 @@ def get_available_ports():
     ports = ports.decode().split("\n")
 
     available_ports = []
-
+    __available_ports = []
+  
     for port in ports:
         if port.endswith("/dev"):
             port = port[:-4]
@@ -21,29 +22,60 @@ def get_available_ports():
             continue
 
         device_details = device_details.decode().split("\n")
-
+        details = []
+        new_details = lambda: dict()
         _port_details = {}
 
+        # I think the original has a bug.
+        # Only the nth (-1) line matters, but other
+        # devices may satisfy the if-clause
         for line in device_details:
+            
+            __port_details = new_details()
+            
             if line.startswith("DEVNAME="):
                 _port_details["port"] = line[8:].replace("'", "")
+                __port_details["port"] = line[8:].replace("'", "")
+                
             elif line.startswith("ID_VENDOR="):
                 _port_details["vendor"] = line[10:].replace("'", "")
+                __port_details["vendor"] = line[10:].replace("'", "")
+            
             elif line.startswith("ID_VENDOR_ID="):
                 _port_details["vendor_id"] = line[13:].replace("'", "")
+                __port_details["vendor_id"] = line[13:].replace("'", "")
+            
             elif line.startswith("ID_MODEL="):
                 _port_details["model"] = line[9:].replace("'", "")
+                __port_details["model"] = line[9:].replace("'", "")
+            
+            
             elif line.startswith("ID_MODEL_FROM_DATABASE="):
                 _port_details["model_from_database"] = line[23:].replace("'", "")
+                __port_details["model_from_database"] = line[23:].replace("'", "")
+            
             elif line.startswith("ID_MODEL_ID="):
                 _port_details["product_id"] = line[12:].replace("'", "")
+                __port_details["product_id"] = line[12:].replace("'", "")
+            
             elif line.startswith("ID_USB_INTERFACE_NUM="):
                 _port_details["interface"] = "if"+line[21:].replace("'", "")
-
+                __port_details["interface"] = "if"+line[21:].replace("'", "")
+            
+            details.append(__port_details)
+          
         if "bus" not in _port_details["port"]:
             available_ports.append(_port_details)
-
-    return available_ports
+        for pd in details:
+            if "bus" not in pd["port"]:
+                __available_ports.append(pd)
+    try:
+        assert available_ports == __available_ports
+    except AssertionError as e:
+        print("see, told you so")
+        return __available_ports
+    else:
+        return available_ports
 
 
 def find_cellular_modem():
