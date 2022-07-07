@@ -70,9 +70,9 @@ def get_available_ports():
             if "bus" not in pd["port"]:
                 __available_ports.append(pd)
     try:
-        assert available_ports == __available_ports
+        assert set(available_ports) == set(__available_ports)
     except AssertionError as e:
-        print("see, told you so")
+        print("Bug detected")
         return __available_ports
     else:
         return available_ports
