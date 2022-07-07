@@ -72,7 +72,15 @@ def get_available_ports():
     try:
         assert set(available_ports) == set(__available_ports)
     except AssertionError as e:
-        print("Bug detected")
+        print(("This is a bug, please report it at "
+               "https://github.com/sixfab/atcom with the output of"
+               "```sh"
+               "#!/bin/bash"
+               "for device in $(find /sys/bus/usb/devices/usb*/ -name dev); do \ "
+               "    result=$(udevadm info -q property --export -p $device); \ "
+               "    echo \"$device -> $result\"; \"
+               "done"
+               "```"))
         return __available_ports
     else:
         return available_ports
