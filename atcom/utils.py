@@ -78,7 +78,7 @@ def get_available_ports():
                "#!/bin/bash"
                "for device in $(find /sys/bus/usb/devices/usb*/ -name dev); do \ "
                "    result=$(udevadm info -q property --export -p $device); \ "
-               "    echo \"$device -> $result\"; \"
+               "    echo \"$device -> $result\"; \ "
                "done"
                "```"))
         return __available_ports
